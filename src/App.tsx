@@ -8,6 +8,7 @@ import {
   NavLink,
   useParams,
   Outlet,
+  Link,
 } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -18,7 +19,7 @@ const tabs = [
 ];
 
 function TabsPage() {
-  const { id } = useParams();
+  const { tabId } = useParams();
 
   return (
     <>
@@ -30,14 +31,14 @@ function TabsPage() {
             <li
               key={tab.id}
               data-cy="Tab"
-              className={id === tab.id ? 'is-active' : ''}
+              className={tabId === tab.id ? 'is-active' : ''}
             >
-              <NavLink to={`/tabs/${tab.id}`}>{tab.title}</NavLink>
+              <Link to={`/tabs/${tab.id}`}>{tab.title}</Link>
             </li>
           ))}
         </ul>
       </div>
-      {!id ? (
+      {!tabId ? (
         <div className="block" data-cy="TabContent">
           <p>Please select a tab</p>
         </div>
@@ -49,8 +50,8 @@ function TabsPage() {
 }
 
 function TabContent() {
-  const { id } = useParams();
-  const tab = tabs.find(t => t.id === id);
+  const { tabId } = useParams();
+  const tab = tabs.find(t => t.id === tabId);
 
   if (!tab) {
     return (
@@ -102,7 +103,7 @@ export const App = () => (
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/" element={<h1 className="title">Home page</h1>} />
           <Route path="/tabs" element={<TabsPage />}>
-            <Route path=":id" element={<TabContent />} />
+            <Route path=":tabId" element={<TabContent />} />
           </Route>
           <Route path="*" element={<h1 className="title">Page not found</h1>} />
         </Routes>

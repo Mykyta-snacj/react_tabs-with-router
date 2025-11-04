@@ -7,7 +7,6 @@ import {
   Navigate,
   NavLink,
   useParams,
-  Outlet,
   Link,
 } from 'react-router-dom';
 import classNames from 'classnames';
@@ -20,6 +19,7 @@ const tabs = [
 
 function TabsPage() {
   const { tabId } = useParams();
+  const tab = tabs.find(t => t.id === tabId);
 
   return (
     <>
@@ -27,44 +27,23 @@ function TabsPage() {
       <h1 className="title">Tabs page</h1>
       <div className="tabs is-boxed">
         <ul>
-          {tabs.map(tab => (
+          {tabs.map(t => (
             <li
-              key={tab.id}
+              key={t.id}
               data-cy="Tab"
-              className={tabId === tab.id ? 'is-active' : ''}
+              className={tabId === t.id ? 'is-active' : ''}
             >
-              <Link to={`/tabs/${tab.id}`}>{tab.title}</Link>
+              <Link to={`/tabs/${t.id}`}>{t.title}</Link>
             </li>
           ))}
         </ul>
       </div>
-      {!tabId ? (
-        <div className="block" data-cy="TabContent">
-          <p>Please select a tab</p>
-        </div>
-      ) : (
-        <Outlet />
-      )}
-    </>
-  );
-}
-
-function TabContent() {
-  const { tabId } = useParams();
-  const tab = tabs.find(t => t.id === tabId);
-
-  if (!tab) {
-    return (
       <div className="block" data-cy="TabContent">
-        <p>Please select a tab</p>
+        {!tabId && <p>Please select a tab</p>}
+        {tabId && !tab && <p>Please select a tab</p>}
+        {tab && <p>{tab.content}</p>}
       </div>
-    );
-  }
-
-  return (
-    <div className="block" data-cy="TabContent">
-      <p>{tab.content}</p>
-    </div>
+    </>
   );
 }
 
@@ -102,8 +81,9 @@ export const App = () => (
         <Routes>
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/" element={<h1 className="title">Home page</h1>} />
-          <Route path="/tabs" element={<TabsPage />}>
-            <Route path=":tabId" element={<TabContent />} />
+          <Route path="/tabs">
+            <Route index element={<TabsPage />} />
+            <Route path=":tabId" element={<TabsPage />} />
           </Route>
           <Route path="*" element={<h1 className="title">Page not found</h1>} />
         </Routes>
